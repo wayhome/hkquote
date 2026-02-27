@@ -9,7 +9,7 @@ def _fetch_one(symbol: str) -> dict | None:
         with contextlib.redirect_stderr(io.StringIO()):
             ticker = yf.Ticker(symbol)
             info = ticker.fast_info
-            hist = ticker.history(period="5d", interval="1h")
+            hist = ticker.history(period="1d", interval="5m")
 
         price = info.last_price
         prev_close = info.previous_close

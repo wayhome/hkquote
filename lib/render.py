@@ -6,18 +6,25 @@ from rich import box
 from rich.text import Text
 from rich.panel import Panel
 
-SPARK_CHARS = "▁▂▃▄▅▆▇█"
+import math
+
+# rate.sx style: bar height = magnitude of change, color = direction
+_SPARK_BARS = "_▁▂▃▅▇"
 
 
-def _spark(values: list) -> str:
+def _spark(values: list) -> Text:
     if not values or len(values) < 2:
-        return "─" * 8
-    mn, mx = min(values), max(values)
-    if mx == mn:
-        return "─" * 8
-    normalized = [(v - mn) / (mx - mn) for v in values]
-    chars = [SPARK_CHARS[int(n * 7)] for n in normalized]
-    return "".join(chars[-12:])
+        return Text("─" * 8, style="dim")
+    deltas = [values[i] - values[i - 1] for i in range(1, len(values))]
+    max_delta = max(abs(d) for d in deltas)
+    if max_delta == 0:
+        return Text("─" * 8, style="dim")
+    result = Text()
+    for d in deltas[-12:]:
+        idx = min(int(math.ceil(abs(d) * 5.0 / max_delta)), len(_SPARK_BARS) - 1)
+        color = "green" if d >= 0 else "red"
+        result.append(_SPARK_BARS[idx], style=color)
+    return result
 
 
 def _human(num: float) -> str:
@@ -75,7 +82,7 @@ def render_ansi(stocks: list, data: dict, indices: dict, index_symbols: list) ->
     table.add_column("涨跌幅", justify="right", width=9)
     table.add_column("成交量", justify="right", width=8)
     table.add_column("市值", justify="right", width=10)
-    table.add_column("走势(5日)", width=14, no_wrap=True)
+    table.add_column("走势(今日)", width=14, no_wrap=True)
 
     for code, name, symbol in stocks:
         d = data.get(symbol)
@@ -85,8 +92,6 @@ def render_ansi(stocks: list, data: dict, indices: dict, index_symbols: list) ->
 
         price = f"{d['price']:.3f}" if d["price"] else "-"
         pct = d["change_pct"]
-        spark_str = _spark(d["spark"])
-        spark_color = "green" if pct >= 0 else "red"
 
         table.add_row(
             code,
@@ -95,7 +100,7 @@ def render_ansi(stocks: list, data: dict, indices: dict, index_symbols: list) ->
             _change_text(pct),
             _human(d["volume"]),
             _human(d["market_cap"]),
-            Text(spark_str, style=spark_color),
+            _spark(d["spark"]),
         )
 
     console.print(table)

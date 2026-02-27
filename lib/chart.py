@@ -27,7 +27,7 @@ PERIOD_MAP = {
     "1y":  ("1y",  "1wk", "1年"),
     "2y":  ("2y",  "1mo", "2年"),
 }
-DEFAULT_PERIOD = "1mo"
+DEFAULT_PERIOD = "1d"
 SUPPORTED_PERIODS = " | ".join(PERIOD_MAP.keys())
 
 # Register spectrum-reversed palette (same trick as rate.sx)
