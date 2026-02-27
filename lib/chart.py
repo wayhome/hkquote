@@ -96,6 +96,12 @@ def render_chart(code: str, period_key: str = DEFAULT_PERIOD) -> str:
     with contextlib.redirect_stderr(io.StringIO()):
         ticker = yf.Ticker(symbol)
         hist = ticker.history(period=period, interval=interval)
+        if code not in _CODE_TO_NAME:
+            try:
+                info = ticker.info
+                name = info.get("shortName") or info.get("longName") or code
+            except Exception:
+                name = code
 
     if hist.empty:
         return f"未找到股票数据: {code} ({symbol})\n"
