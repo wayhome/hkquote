@@ -7,6 +7,7 @@ Individual stock chart — styled after rate.sx.
 
 import contextlib
 import io
+import os
 from datetime import datetime
 
 import diagram
@@ -73,6 +74,7 @@ def _make_diagram(ticks: list[float], width: int = 80, height: int = 25) -> str:
         sleep = None
         sort_by_column = None
 
+    os.environ.setdefault("TERM", "xterm-256color")
     istream = [str(x) for x in ticks]
     ostream = io.BytesIO()
     size = diagram.Point((width, height))
