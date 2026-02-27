@@ -72,7 +72,7 @@ def stock_chart(topic):
     else:
         code, period = topic, DEFAULT_PERIOD
 
-    ansi = render_chart(code.strip(), period.strip())
+    ansi = render_chart(code.strip(), period.strip(), host=request.host)
 
     if _is_curl(ua):
         return ansi, 200, {"Content-Type": "text/plain; charset=utf-8"}

@@ -83,7 +83,7 @@ def _make_diagram(ticks: list[float], width: int = 80, height: int = 25) -> str:
     return ostream.getvalue().decode("utf-8")
 
 
-def render_chart(code: str, period_key: str = DEFAULT_PERIOD) -> str:
+def render_chart(code: str, period_key: str = DEFAULT_PERIOD, host: str = "localhost:8080") -> str:
     period_key = period_key.lower()
     if period_key not in PERIOD_MAP:
         return f"不支持的时间范围: {period_key}\n支持: {SUPPORTED_PERIODS}\n"
@@ -175,7 +175,7 @@ def render_chart(code: str, period_key: str = DEFAULT_PERIOD) -> str:
     out += f"{dim}change:{rst} {chg_color}{change:+.3f}{rst} ({chg_color}{change_pct:+.2f}%{rst})\n"
 
     out += (
-        f"\n{dim}用法: curl localhost:8080/<代码>[@时间范围]  "
+        f"\n{dim}用法: curl {host}/<代码>[@时间范围]  "
         f"时间范围: {SUPPORTED_PERIODS}{rst}\n\n"
     )
     return out
